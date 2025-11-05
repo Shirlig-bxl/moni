@@ -1,0 +1,198 @@
+# 故障注入配置文件
+# Fault Injection Configuration
+
+# 全局配置
+global:
+  experiment_name: "bert-imdb-fault-injection"
+  output_dir: "./fault_experiments"
+  random_seed: 42
+  
+# 故障类型配置
+fault_types:
+  # 1. NaN Loss 故障
+  nan_loss:
+    enabled: true
+    description: "注入 NaN 损失值"
+    injection_method: "gradient_corruption"
+    parameters:
+      corruption_probability: 0.1
+      target_layers: ["classifier"]
+    
+  # 2. OOM (内存溢出) 故障  
+  oom:
+    enabled: true
+    description: "内存溢出故障"
+    injection_method: "memory_allocation"
+    parameters:
+      memory_size_mb: 1024
+      allocation_pattern: "exponential"
+      
+  # 3. 模型不收敛故障
+  non_convergence:
+    enabled: true
+    description: "模型不收敛"
+    injection_method: "learning_rate_corruption"
+    parameters:
+      lr_multiplier: 1000.0
+      target_optimizer: "AdamW"
+      
+  # 4. I/O 瓶颈故障
+  io_bottleneck:
+    enabled: true
+    description: "I/O 瓶颈"
+    injection_method: "disk_stress"
+    parameters:
+      stress_duration: 60
+      io_operations_per_second: 1000
+      file_size_mb: 100
+      
+  # 5. 资源竞争故障
+  resource_competition:
+    enabled: true
+    description: "资源竞争"
+    injection_method: "cpu_memory_stress"
+    parameters:
+      cpu_stress_processes: 4
+      memory_stress_mb: 2048
+      duration: 120
+      
+  # 6. 进程终止故障
+  process_termination:
+    enabled: true
+    description: "进程异常终止"
+    injection_method: "signal_injection"
+    parameters:
+      signal_type: "SIGTERM"
+      delay_before_kill: 30
+
+# 注入时间配置
+injection_schedule:
+  # 基于训练步数的注入
+  step_based:
+    - fault_type: "nan_loss"
+      injection_step: 100
+      duration: 10
+      
+    - fault_type: "oom"
+      injection_step: 200
+      duration: 5
+      
+    - fault_type: "non_convergence"
+      injection_step: 50
+      duration: 50
+      
+  # 基于时间的注入
+  time_based:
+    - fault_type: "io_bottleneck"
+      injection_time: 60  # 训练开始后60秒
+      duration: 60
+      
+    - fault_type: "resource_competition"
+      injection_time: 180  # 训练开始后3分钟
+      duration: 120
+      
+    - fault_type: "process_termination"
+      injection_time: 300  # 训练开始后5分钟
+      duration: 1
+
+# 监控配置
+monitoring:
+  # GPU 监控
+  gpu:
+    enabled: true
+    sampling_interval: 1.0  # 秒
+    metrics:
+      - "utilization"
+      - "memory_used"
+      - "memory_total"
+      - "temperature"
+      - "power_draw"
+      
+  # 系统监控
+  system:
+    enabled: true
+    sampling_interval: 1.0  # 秒
+    metrics:
+      - "cpu_percent"
+      - "memory_percent"
+      - "disk_io"
+      - "network_io"
+      - "load_average"
+      
+  # 训练日志监控
+  training_logs:
+    enabled: true
+    log_file_pattern: "*.log"
+    parsing_rules:
+      - pattern: "loss"
+        type: "float"
+      - pattern: "accuracy"
+        type: "float"
+      - pattern: "learning_rate"
+        type: "float"
+
+# 数据聚合配置
+aggregation:
+  time_alignment: true
+  sampling_rate: 1.0  # 秒
+  interpolation_method: "linear"
+  missing_value_strategy: "forward_fill"
+  
+# TSE-Matrix 配置
+tse_matrix:
+  enabled: true
+  time_window: 300  # 5分钟窗口
+  feature_engineering:
+    - "moving_average"
+    - "standard_deviation"
+    - "rate_of_change"
+  anomaly_labeling:
+    label_before_fault: 5  # 故障前5秒开始标记
+    label_after_fault: 10  # 故障后10秒结束标记
+    
+# 实验配置
+experiments:
+  baseline:
+    enabled: true
+    duration: 600  # 10分钟基线实验
+    
+  fault_injection:
+    enabled: true
+    repetitions: 3  # 每种故障重复3次
+    randomize_order: true
+    
+  # 实验序列
+  experiment_sequence:
+    - name: "baseline"
+      type: "baseline"
+      duration: 600
+      
+    - name: "nan_loss_exp"
+      type: "fault_injection"
+      fault_type: "nan_loss"
+      duration: 300
+      
+    - name: "oom_exp"
+      type: "fault_injection"
+      fault_type: "oom"
+      duration: 300
+      
+    - name: "non_convergence_exp"
+      type: "fault_injection"
+      fault_type: "non_convergence"
+      duration: 400
+      
+    - name: "io_bottleneck_exp"
+      type: "fault_injection"
+      fault_type: "io_bottleneck"
+      duration: 300
+      
+    - name: "resource_competition_exp"
+      type: "fault_injection"
+      fault_type: "resource_competition"
+      duration: 400
+      
+    - name: "process_termination_exp"
+      type: "fault_injection"
+      fault_type: "process_termination"
+      duration: 200

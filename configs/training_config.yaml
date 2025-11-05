@@ -1,0 +1,67 @@
+# BERT-IMDB 训练配置文件
+# Training Configuration for BERT-IMDB Fine-tuning
+
+# 模型配置
+model:
+  name: "bert-base-uncased"
+  num_labels: 2
+  max_length: 512
+
+# 数据配置
+data:
+  dataset_name: "imdb"
+  train_split: "train"
+  test_split: "test"
+  validation_split: 0.1
+  batch_size: 16
+  num_workers: 4
+
+# 训练配置
+training:
+  num_epochs: 3
+  learning_rate: 2e-5
+  weight_decay: 0.01
+  warmup_steps: 500
+  max_grad_norm: 1.0
+  save_steps: 500
+  eval_steps: 500
+  logging_steps: 100
+  
+# 优化器配置
+optimizer:
+  type: "AdamW"
+  betas: [0.9, 0.999]
+  eps: 1e-8
+
+# 调度器配置
+scheduler:
+  type: "linear"
+  warmup_ratio: 0.1
+
+# 输出配置
+output:
+  output_dir: "./results"
+  logging_dir: "./logs"
+  save_total_limit: 3
+  load_best_model_at_end: true
+  metric_for_best_model: "eval_accuracy"
+  greater_is_better: true
+
+# 硬件配置
+hardware:
+  use_cuda: true
+  fp16: false
+  dataloader_pin_memory: true
+  gradient_checkpointing: false
+
+# 监控配置
+monitoring:
+  log_level: "INFO"
+  report_to: ["tensorboard"]
+  run_name: "bert-imdb-baseline"
+  
+# 故障注入配置 (用于实验)
+fault_injection:
+  enabled: false
+  fault_types: []
+  injection_times: []

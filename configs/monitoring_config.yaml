@@ -1,0 +1,252 @@
+# 监控配置文件
+# Monitoring Configuration
+
+# 全局监控配置
+global:
+  enabled: true
+  output_dir: "./monitoring_data"
+  log_level: "INFO"
+  sampling_interval: 1.0  # 默认采样间隔(秒)
+
+# GPU 监控配置
+gpu_monitoring:
+  enabled: true
+  sampling_interval: 1.0
+  output_file: "gpu_metrics.csv"
+  
+  # 监控指标
+  metrics:
+    utilization:
+      enabled: true
+      description: "GPU 利用率 (%)"
+      
+    memory_used:
+      enabled: true
+      description: "GPU 内存使用量 (MB)"
+      
+    memory_total:
+      enabled: true
+      description: "GPU 总内存 (MB)"
+      
+    temperature:
+      enabled: true
+      description: "GPU 温度 (°C)"
+      
+    power_draw:
+      enabled: true
+      description: "GPU 功耗 (W)"
+      
+    fan_speed:
+      enabled: false
+      description: "风扇转速 (%)"
+      
+    clock_graphics:
+      enabled: false
+      description: "图形时钟频率 (MHz)"
+      
+    clock_memory:
+      enabled: false
+      description: "内存时钟频率 (MHz)"
+
+# 系统监控配置
+system_monitoring:
+  enabled: true
+  sampling_interval: 1.0
+  output_file: "system_metrics.csv"
+  
+  # CPU 监控
+  cpu:
+    enabled: true
+    metrics:
+      - "cpu_percent"
+      - "cpu_count"
+      - "load_average"
+      - "cpu_freq"
+      
+  # 内存监控
+  memory:
+    enabled: true
+    metrics:
+      - "memory_percent"
+      - "memory_available"
+      - "memory_used"
+      - "memory_total"
+      - "swap_percent"
+      - "swap_used"
+      - "swap_total"
+      
+  # 磁盘监控
+  disk:
+    enabled: true
+    metrics:
+      - "disk_usage_percent"
+      - "disk_read_bytes"
+      - "disk_write_bytes"
+      - "disk_read_count"
+      - "disk_write_count"
+      
+  # 网络监控
+  network:
+    enabled: true
+    metrics:
+      - "bytes_sent"
+      - "bytes_recv"
+      - "packets_sent"
+      - "packets_recv"
+      - "connections"
+
+# 训练日志监控配置
+log_monitoring:
+  enabled: true
+  output_file: "training_metrics.csv"
+  
+  # 日志文件配置
+  log_files:
+    - pattern: "*.log"
+      encoding: "utf-8"
+      
+  # 解析规则
+  parsing_rules:
+    # 损失值解析
+    loss:
+      pattern: "loss[:\\s=]+([0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)"
+      type: "float"
+      group: 1
+      
+    # 准确率解析
+    accuracy:
+      pattern: "accuracy[:\\s=]+([0-9]*\\.?[0-9]+)"
+      type: "float"
+      group: 1
+      
+    # 学习率解析
+    learning_rate:
+      pattern: "learning_rate[:\\s=]+([0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)"
+      type: "float"
+      group: 1
+      
+    # 训练步数解析
+    step:
+      pattern: "step[:\\s=]+([0-9]+)"
+      type: "int"
+      group: 1
+      
+    # Epoch 解析
+    epoch:
+      pattern: "epoch[:\\s=]+([0-9]+)"
+      type: "int"
+      group: 1
+      
+    # 错误信息解析
+    error:
+      pattern: "(ERROR|CRITICAL|Exception|Error)"
+      type: "string"
+      group: 0
+      
+    # 警告信息解析
+    warning:
+      pattern: "(WARNING|WARN)"
+      type: "string"
+      group: 0
+
+# 异常检测配置
+anomaly_detection:
+  enabled: true
+  
+  # GPU 异常检测
+  gpu_anomalies:
+    high_temperature:
+      threshold: 85  # °C
+      duration: 10   # 秒
+      
+    high_memory_usage:
+      threshold: 95  # %
+      duration: 5    # 秒
+      
+    low_utilization:
+      threshold: 5   # %
+      duration: 30   # 秒
+      
+  # 系统异常检测
+  system_anomalies:
+    high_cpu_usage:
+      threshold: 90  # %
+      duration: 10   # 秒
+      
+    high_memory_usage:
+      threshold: 95  # %
+      duration: 5    # 秒
+      
+    high_disk_usage:
+      threshold: 95  # %
+      duration: 1    # 秒
+      
+  # 训练异常检测
+  training_anomalies:
+    nan_loss:
+      pattern: "nan|inf"
+      type: "loss_anomaly"
+      
+    loss_explosion:
+      threshold: 100.0
+      type: "loss_anomaly"
+      
+    no_improvement:
+      patience: 100  # steps
+      type: "convergence_anomaly"
+
+# 数据存储配置
+data_storage:
+  # CSV 格式配置
+  csv:
+    enabled: true
+    separator: ","
+    timestamp_format: "%Y-%m-%d %H:%M:%S.%f"
+    
+  # JSON 格式配置
+  json:
+    enabled: false
+    pretty_print: true
+    
+  # 数据压缩
+  compression:
+    enabled: false
+    format: "gzip"
+    
+  # 数据轮转
+  rotation:
+    enabled: true
+    max_file_size: "100MB"
+    backup_count: 5
+
+# 实时监控配置
+realtime_monitoring:
+  enabled: false
+  
+  # Web 界面配置
+  web_interface:
+    enabled: false
+    host: "localhost"
+    port: 8080
+    
+  # 告警配置
+  alerts:
+    enabled: false
+    email_notifications: false
+    slack_notifications: false
+
+# 性能优化配置
+performance:
+  # 缓冲区配置
+  buffer_size: 1000
+  
+  # 批量写入
+  batch_write:
+    enabled: true
+    batch_size: 100
+    flush_interval: 5  # 秒
+    
+  # 多线程配置
+  threading:
+    enabled: true
+    max_workers: 4
