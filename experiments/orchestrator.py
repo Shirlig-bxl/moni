@@ -13,9 +13,10 @@ import argparse
 # 添加src目录到Python路径
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from baseline_run import run_baseline_experiment
-from fault_experiments import run_all_fault_experiments
-from aggregator import DataAggregator, TSEMatrixBuilder
+from .baseline_run import run_baseline_experiment
+from .fault_experiments import run_all_fault_experiments
+from aggregator.data_aggregator import DataAggregator
+from aggregator.tse_matrix_builder import TSEMatrixBuilder
 
 
 def run_complete_experiment_pipeline(

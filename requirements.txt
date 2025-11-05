@@ -1,39 +1,18 @@
-# 深度学习框架
-torch>=2.0.0
-transformers>=4.30.0
-datasets>=2.12.0
+# 基础依赖（本地实验必需）
+pandas>=1.3.0
+numpy>=1.21.0
+psutil>=5.8.0
+
+# GPU实验依赖（Colab中使用）
+torch>=1.9.0
+transformers>=4.20.0
+datasets>=2.0.0
 accelerate>=0.20.0
+evaluate>=0.4.0
 
-# GPU监控
-nvidia-ml-py3>=7.352.0
-pynvml>=11.4.1
-
-# 系统监控
-psutil>=5.9.0
-
-# 数据处理
-pandas>=2.0.0
-numpy>=1.24.0
-scipy>=1.10.0
-
-# 日志处理
-loguru>=0.7.0
-
-# 配置管理
+# 可选依赖
 pyyaml>=6.0
-omegaconf>=2.3.0
-
-# 可视化 (可选)
-matplotlib>=3.7.0
-seaborn>=0.12.0
-
-# 实用工具
-tqdm>=4.65.0
-click>=8.1.0
-
-# 测试工具 (可选)
-pytest>=7.3.0
-pytest-cov>=4.1.0
-
-# I/O压力测试工具
-fio>=3.34  # 需要系统安装: brew install fio (macOS) 或 apt-get install fio (Ubuntu)
+loguru>=0.6.0
+tqdm>=4.64.0
+scikit-learn>=1.0.0
+nvidia-ml-py3>=7.352.0

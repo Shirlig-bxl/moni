@@ -354,7 +354,7 @@ class DataAggregator:
         # 加载各数据源
         dataframes = []
         
-        if os.path.exists(gpu_file):
+        if gpu_file and os.path.exists(gpu_file):
             gpu_df = self.load_gpu_metrics(gpu_file)
             if not gpu_df.empty:
                 dataframes.append(gpu_df)
